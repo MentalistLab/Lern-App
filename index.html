@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>Lern-Arena</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <button class="brand" data-go="home" aria-label="Zur Startseite">🧠 <span>Lern-Arena</span></button>
+    <div class="top-xp" id="topxp" aria-live="polite"></div>
+    <nav>
+      <button data-go="home">Start</button>
+      <button data-go="profile">Profil</button>
+    </nav>
+  </header>
+
+  <main id="app"></main>
+  <div id="toasts" aria-live="polite"></div>
+
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
