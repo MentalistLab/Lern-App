@@ -43,6 +43,17 @@
           "color": "#22D8FF"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "c5511538-e7f1-4169-bcbd-c65afb1ccaf7"
+      }
+    },
+    "owner": "maxi1233"
   }
 }

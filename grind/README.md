@@ -80,3 +80,16 @@ Design-Tokens (Farben, Schriften) stehen in `src/theme.ts` und `src/ranks.ts`. S
 - Glow-Effekte nutzen `shadow*`-Eigenschaften. Auf Android werden sie nicht überall so weich dargestellt wie auf iOS und im Web.
 - Die Gold-Verläufe in den Titeln des Rang-Aufstiegs sind einfarbig mit Leuchten, weil React Native keinen Text-Verlauf kennt.
 - Erinnerungen sind lokale Benachrichtigungen und gibt es nur in der Handy-App, nicht im Browser. Sie sind nicht auf einem echten Gerät getestet; die Planung (wann welcher Text) ist per Skript geprüft.
+
+## Als App aufs Handy
+
+**Web-App (iPhone und Android):** Die App ist eine installierbare Web-App (Manifest, Icons, Offline-Speicher in `public/`). Nach dem Veröffentlichen die Adresse im Handy-Browser öffnen und "Zum Home-Bildschirm" wählen (iPhone: Safari, Teilen-Menü; Android: Chrome-Menü, "App installieren"). Sie startet dann im Vollbild und funktioniert nach dem ersten Laden auch ohne Netz. Die täglichen Erinnerungen gibt es in dieser Form nicht.
+
+```bash
+npx expo export --platform web
+npx eas-cli deploy --prod          # veröffentlicht auf <name>.expo.app
+```
+
+**Android-App (APK):** `npx eas-cli build --platform android --profile preview` baut eine installierbare APK in der Expo-Cloud (Projekt `@maxi1233/grind`, siehe `eas.json`). Die Erinnerungen funktionieren in dieser Version.
+
+**iPhone-App:** Eine echte iOS-App braucht ein Apple-Developer-Konto (99 USD pro Jahr). Bis dahin ist die Web-App der Weg aufs iPhone.
