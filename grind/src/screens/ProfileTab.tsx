@@ -11,17 +11,34 @@ import { Body, Display, Eyebrow } from '../components/Typo';
 import { formatNumber, RANKS, rankFromXp } from '../ranks';
 import { formatDuration, heatmap, streaks, subjectXp, totalSeconds, totalXp } from '../stats';
 import { useStore } from '../store';
+import { remindersSupported, requestReminderPermission } from '../reminders';
 import { colors, DAILY_GOALS, withAlpha } from '../theme';
+
+const REMINDER_TIMES = [
+  { hour: 16, minute: 0 },
+  { hour: 18, minute: 0 },
+  { hour: 19, minute: 30 },
+  { hour: 21, minute: 0 },
+];
+const fmtTime = (h: number, m: number) => `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 
 const HEAT = [colors.track, 'rgba(34,216,255,0.28)', 'rgba(34,216,255,0.6)', colors.cyan];
 
 export function ProfileTab() {
-  const { subjects, sessions, dailyGoalMin, userName, setDailyGoal, setUserName, resetAll } = useStore();
+  const { subjects, sessions, dailyGoalMin, userName, reminder, setDailyGoal, setReminder, setUserName, resetAll } = useStore();
   const insets = useSafeAreaInsets();
   const [editName, setEditName] = useState(false);
   const [editGoal, setEditGoal] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [heatW, setHeatW] = useState(320);
+  const [permDenied, setPermDenied] = useState(false);
+
+  const toggleReminder = async () => {
+    if (reminder.enabled) return setReminder({ enabled: false });
+    const ok = await requestReminderPermission();
+    setPermDenied(!ok);
+    if (ok) setReminder({ enabled: true });
+  };
 
   const { h, m } = formatDuration(totalSeconds(sessions));
   const st = streaks(sessions, dailyGoalMin);
@@ -173,6 +190,49 @@ export function ProfileTab() {
           ))}
         </View>
       </View>
+
+      <Chamfer cut={14} border={reminder.enabled ? [colors.cyan, colors.line] : colors.line} fill={[colors.card, '#0A1226']} style={{ marginTop: 6 }}
+        contentStyle={{ padding: 14, gap: 12 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <View style={{ flex: 1 }}>
+            <Eyebrow>ERINNERUNG</Eyebrow>
+            <Body size={14} color={colors.text2} style={{ marginTop: 2 }}>
+              {remindersSupported
+                ? 'Eine Nachricht, bevor dein Streak reißt. Sie bleibt still, wenn du dein Tagesziel schon erreicht hast.'
+                : 'Erinnerungen gibt es in der Handy-App, nicht im Browser.'}
+            </Body>
+          </View>
+          <Pressable
+            onPress={toggleReminder}
+            disabled={!remindersSupported}
+            accessibilityRole="switch"
+            accessibilityLabel="Erinnerung"
+            accessibilityState={{ checked: reminder.enabled, disabled: !remindersSupported }}
+            style={{ width: 56, height: 44, justifyContent: 'center', opacity: remindersSupported ? 1 : 0.4 }}
+          >
+            <View style={{ width: 52, height: 30, borderRadius: 15, backgroundColor: reminder.enabled ? colors.cyan : colors.track, justifyContent: 'center' }}>
+              <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: reminder.enabled ? colors.ink : colors.quiet, marginLeft: reminder.enabled ? 25 : 3 }} />
+            </View>
+          </Pressable>
+        </View>
+        {reminder.enabled ? (
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {REMINDER_TIMES.map((t) => {
+              const on = t.hour === reminder.hour && t.minute === reminder.minute;
+              return (
+                <Chamfer key={fmtTime(t.hour, t.minute)} cut={8} borderWidth={0} fill={on ? ['#6BEBFF', '#22D8FF'] : colors.chip} vertical
+                  onPress={() => setReminder({ hour: t.hour, minute: t.minute })} accessibilityLabel={`${fmtTime(t.hour, t.minute)} Uhr`}
+                  accessibilityState={{ selected: on }} style={{ flex: 1 }} contentStyle={{ height: 44, alignItems: 'center', justifyContent: 'center' }}>
+                  <Body size={14} weight="bold" color={on ? colors.ink : colors.muted}>{fmtTime(t.hour, t.minute)}</Body>
+                </Chamfer>
+              );
+            })}
+          </View>
+        ) : null}
+        {permDenied ? (
+          <Body size={13} weight="semi" color={colors.stop}>Benachrichtigungen sind für Grind ausgeschaltet. Erlaube sie in den Einstellungen deines Handys.</Body>
+        ) : null}
+      </Chamfer>
 
       <View style={{ marginTop: 10, gap: 8 }}>
         {confirmReset ? (

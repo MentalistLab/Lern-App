@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { rankFromXp, xpForSeconds, type RankState } from './ranks';
+import { DEFAULT_REMINDER, type Reminder } from './reminderPlan';
 import { subjectXp } from './stats';
 
 export interface Subject {
@@ -22,6 +23,7 @@ interface PersistedState {
   onboarded: boolean;
   userName: string;
   dailyGoalMin: number;
+  reminder: Reminder;
   subjects: Subject[];
   sessions: Session[];
 }
@@ -32,6 +34,7 @@ const initial: PersistedState = {
   onboarded: false,
   userName: 'Spieler',
   dailyGoalMin: 45,
+  reminder: DEFAULT_REMINDER,
   subjects: [],
   sessions: [],
 };
@@ -50,6 +53,7 @@ interface Store extends PersistedState {
   deleteSubject: (id: string) => void;
   recordSession: (subjectId: string, seconds: number, startedAt: number) => SessionResult | null;
   setDailyGoal: (min: number) => void;
+  setReminder: (patch: Partial<Reminder>) => void;
   setUserName: (name: string) => void;
   resetAll: () => Promise<void>;
 }
@@ -71,7 +75,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         if (raw) {
           try {
             const parsed = JSON.parse(raw) as Partial<PersistedState>;
-            setState({ ...initial, ...parsed });
+            setState({ ...initial, ...parsed, reminder: { ...DEFAULT_REMINDER, ...(parsed.reminder ?? {}) } });
           } catch {
             /* defekte Daten ignorieren */
           }
@@ -126,6 +130,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setDailyGoal = useCallback((min: number) => setState((s) => ({ ...s, dailyGoalMin: min })), []);
+  const setReminder = useCallback((patch: Partial<Reminder>) => setState((s) => ({ ...s, reminder: { ...s.reminder, ...patch } })), []);
   const setUserName = useCallback((name: string) => setState((s) => ({ ...s, userName: name })), []);
   const resetAll = useCallback(async () => {
     await AsyncStorage.removeItem(KEY);
@@ -135,9 +140,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<Store>(
     () => ({
       ...state, ready, completeOnboarding, addSubject, updateSubject, deleteSubject,
-      recordSession, setDailyGoal, setUserName, resetAll,
+      recordSession, setDailyGoal, setReminder, setUserName, resetAll,
     }),
-    [state, ready, completeOnboarding, addSubject, updateSubject, deleteSubject, recordSession, setDailyGoal, setUserName, resetAll],
+    [state, ready, completeOnboarding, addSubject, updateSubject, deleteSubject, recordSession, setDailyGoal, setReminder, setUserName, resetAll],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

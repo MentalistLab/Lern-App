@@ -36,6 +36,12 @@
           "backgroundColor": "#060A16",
           "imageWidth": 200
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#22D8FF"
+        }
       ]
     ]
   }

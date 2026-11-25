@@ -33,6 +33,16 @@ npx expo-doctor         # Projekt-Check
 | Alle Ränge je Fach (gesperrte abgedunkelt) | `src/screens/RanksTab.tsx` |
 | Profil: Gesamtzeit, Streak, stärkstes Fach, Heatmap | `src/screens/ProfileTab.tsx` |
 | Fach hinzufügen, bearbeiten, löschen | `src/app/subject-form.tsx` |
+| Tägliche Erinnerung (Profil) | `src/reminders.ts`, `src/reminderPlan.ts` |
+
+## Erinnerungen
+
+Im Profil lässt sich eine tägliche Erinnerung einschalten (16:00, 18:00, 19:30 oder 21:00 Uhr). Die App plant die nächsten 7 Tage als lokale Benachrichtigungen, ohne Server:
+
+- Heute wird übersprungen, wenn das Tagesziel schon erreicht ist oder die Uhrzeit vorbei ist.
+- Heute mit Streak: "Dein Streak von 12 Tagen steht auf dem Spiel – noch 17 Min bis zum Tagesziel."
+- Ist ein Fach höchstens 500 XP vom nächsten Rang entfernt, nennt der Text das: "Noch 155 XP bis Gold in Deutsch."
+- Die Planung wird bei jeder Session, bei Änderungen und beim Öffnen der App neu berechnet.
 
 Alles wird lokal auf dem Gerät gespeichert (AsyncStorage, Schlüssel `grind.v1`). Es gibt kein Konto und keinen Server.
 
@@ -69,4 +79,4 @@ Design-Tokens (Farben, Schriften) stehen in `src/theme.ts` und `src/ranks.ts`. S
 
 - Glow-Effekte nutzen `shadow*`-Eigenschaften. Auf Android werden sie nicht überall so weich dargestellt wie auf iOS und im Web.
 - Die Gold-Verläufe in den Titeln des Rang-Aufstiegs sind einfarbig mit Leuchten, weil React Native keinen Text-Verlauf kennt.
-- Erinnerungen per Push-Benachrichtigung gibt es noch nicht.
+- Erinnerungen sind lokale Benachrichtigungen und gibt es nur in der Handy-App, nicht im Browser. Sie sind nicht auf einem echten Gerät getestet; die Planung (wann welcher Text) ist per Skript geprüft.
