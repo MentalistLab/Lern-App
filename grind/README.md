@@ -87,7 +87,7 @@ Design-Tokens (Farben, Schriften) stehen in `src/theme.ts` und `src/ranks.ts`. S
 
 ```bash
 npx expo export --platform web
-npx eas-cli deploy --prod          # veröffentlicht auf <name>.expo.app
+npx eas-cli deploy --prod          # veröffentlicht auf https://maxi1233-grind.expo.app
 ```
 
 **Android-App (APK):** `npx eas-cli build --platform android --profile preview` baut eine installierbare APK in der Expo-Cloud (Projekt `@maxi1233/grind`, siehe `eas.json`). Die Erinnerungen funktionieren in dieser Version.
